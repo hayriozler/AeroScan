@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <LangVersion>13</LangVersion>
+    <UserSecretsId>aeroscan-webapp</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
+    <PackageReference Include="Microsoft.Extensions.ServiceDiscovery" />
+    <PackageReference Include="MudBlazor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ServiceDefaults\ServiceDefault.csproj" />
+    <ProjectReference Include="..\..\Shared\Contracts\Contracts.csproj" />
+  </ItemGroup>
+
+  <!-- Run Tailwind CLI before each build to generate wwwroot/app.gen.css.
+       Uses node directly to avoid shell & character issues in directory names. -->
+  <Target Name="BuildTailwind" BeforeTargets="Build">
+    <Exec Command="npm install --prefer-offline" Condition="!Exists('$(MSBuildProjectDirectory)\node_modules')" WorkingDirectory="$(MSBuildProjectDirectory)" />
+    <Exec Command="node &quot;$(MSBuildProjectDirectory)\node_modules\tailwindcss\lib\cli.js&quot; -i &quot;$(MSBuildProjectDirectory)\Styles\app.input.css&quot; -o &quot;$(MSBuildProjectDirectory)\wwwroot\app.gen.css&quot; --minify" WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
+  <!-- Exclude generated CSS and node_modules from source control tracking -->
+  <ItemGroup>
+    <None Remove="node_modules\**" />
+    <Content Remove="node_modules\**" />
+  </ItemGroup>
+
+
+</Project>
